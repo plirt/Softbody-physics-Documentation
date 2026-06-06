@@ -1,0 +1,45 @@
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+	background: #101114;
+	color: #f2f4f8;
+}
+
+header {
+	padding: 64px 24px;
+	text-align: center;
+	background: #1b2330;
+}
+
+main {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 32px 24px;
+}
+
+pre {
+	overflow-x: auto;
+	padding: 16px;
+	background: #181b20;
+	border-radius: 8px;
+}
+
+pre {
+	position: relative;
+}
+
+.copy-button {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	border: 0;
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: #2f6feb;
+	color: white;
+	cursor: pointer;
+}
+
+.copy-button.is-copied {
+	background: #2ea043;
+}
