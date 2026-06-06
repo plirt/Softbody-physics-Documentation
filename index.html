@@ -3,25 +3,284 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Softbody Physics</title>
+	<title>Softbody Physics Docs</title>
 	<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-	<header>
-		<h1>Softbody Physics</h1>
-		<p>Roblox EditableMesh softbody physics module.</p>
+	<header class="topbar">
+		<a class="brand" href="#top">Softbody Physics</a>
+
+		<button class="nav-toggle" data-nav-toggle aria-expanded="false">Menu</button>
+
+		<nav class="nav" data-nav>
+			<a href="#install">Install</a>
+			<a href="#quickstart">Quick Start</a>
+			<a href="#api">API</a>
+			<a href="#settings">Settings</a>
+			<a href="#custom-mesh">Custom Mesh</a>
+			<a href="#performance">Performance</a>
+		</nav>
 	</header>
 
-	<main>
-		<section>
+	<main id="top">
+		<section class="hero">
+			<div class="hero-copy">
+				<p class="eyebrow">Roblox EditableMesh Module</p>
+				<h1>Softbody Physics for Roblox</h1>
+				<p class="lead">
+					Create squishy, deformable sphere and mesh softbodies with runtime physics,
+					collision, custom settings, culling, and mesh conversion utilities.
+				</p>
+
+				<div class="hero-actions">
+					<a class="button primary" href="#quickstart">Get Started</a>
+					<a class="button secondary" href="#api">API Reference</a>
+				</div>
+			</div>
+
+			<div class="preview">
+				<div class="blob blob-a"></div>
+				<div class="blob blob-b"></div>
+				<div class="blob blob-c"></div>
+				<div class="grid-floor"></div>
+			</div>
+		</section>
+
+		<section id="install" class="section">
+			<h2>Install</h2>
+			<p>
+				Place the `SoftbodyHandler` module inside `ReplicatedStorage`, then require it from a
+				client or server script depending on your use case.
+			</p>
+
+			<pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local softbody_handler = require(ReplicatedStorage.SoftbodyHandler)</code></pre>
+		</section>
+
+		<section id="quickstart" class="section">
 			<h2>Quick Start</h2>
-			<pre><code>local softbody_handler = require(ReplicatedStorage.SoftbodyHandler)
+			<p>Create a basic sphere softbody.</p>
+
+			<pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local softbody_handler = require(ReplicatedStorage.SoftbodyHandler)
 
 softbody_handler.Create(Vector3.new(0, 20, 0), Color3.fromRGB(120, 185, 255), {
 	Radius = 5,
 	Subdivisions = 2,
+	ShapeStiffness = 0.32,
+	BendStiffness = 0.05,
+	FloorY = 0,
 })</code></pre>
 		</section>
+
+		<section id="api" class="section">
+			<h2>API Reference</h2>
+
+			<div class="api-card">
+				<h3>softbody_handler.Create</h3>
+				<p>Creates a new softbody and returns the body object.</p>
+
+				<pre><code>softbody_handler.Create(spawnPosition, color, settings)</code></pre>
+
+				<table>
+					<thead>
+						<tr>
+							<th>Parameter</th>
+							<th>Type</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>`spawnPosition`</td>
+							<td>`Vector3`</td>
+							<td>World position where the softbody spawns.</td>
+						</tr>
+						<tr>
+							<td>`color`</td>
+							<td>`Color3`</td>
+							<td>Color used by generated sphere softbodies.</td>
+						</tr>
+						<tr>
+							<td>`settings`</td>
+							<td>`table?`</td>
+							<td>Optional configuration table.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<pre><code>local body = softbody_handler.Create(Vector3.new(0, 20, 0), Color3.new(1, 0, 0), {
+	Radius = 6,
+	Subdivisions = 2,
+	Bounce = 0.15,
+})</code></pre>
+			</div>
+
+			<div class="api-card">
+				<h3>softbody_handler.Destroy</h3>
+				<p>Destroys a softbody and removes it from the simulation list.</p>
+
+				<pre><code>softbody_handler.Destroy(body)</code></pre>
+
+				<pre><code>local body = softbody_handler.Create(Vector3.new(0, 20, 0), Color3.new(1, 0, 0))
+
+task.wait(10)
+softbody_handler.Destroy(body)</code></pre>
+			</div>
+
+			<div class="api-card">
+				<h3>softbody_handler.Step</h3>
+				<p>
+					Steps all active softbodies. This is usually connected automatically with
+					`RunService.Heartbeat`.
+				</p>
+
+				<pre><code>softbody_handler.Step(dt)</code></pre>
+			</div>
+
+			<div class="api-card">
+				<h3>softbody_handler.GetBodies</h3>
+				<p>Returns the active softbody list. Useful for debug tools or custom interactions.</p>
+
+				<pre><code>local bodies = softbody_handler.GetBodies()</code></pre>
+			</div>
+
+			<div class="api-card">
+				<h3>utility.from_mesh_part</h3>
+				<p>
+					Converts a Roblox `MeshPart` into mesh data that can be passed into
+					`softbody_handler.Create`.
+				</p>
+
+				<pre><code>local utility = require(ReplicatedStorage.SoftbodyHandler.Utility)
+
+local meshData = utility.from_mesh_part(workspace.Cube)
+
+softbody_handler.Create(Vector3.new(15, 20, 0), workspace.Cube.Color, {
+	Mesh = meshData,
+})</code></pre>
+			</div>
+		</section>
+
+		<section id="settings" class="section">
+			<h2>Settings</h2>
+
+			<table>
+				<thead>
+					<tr>
+						<th>Setting</th>
+						<th>Type</th>
+						<th>Default</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><td>`Radius`</td><td>`number`</td><td>`5`</td><td>Sphere radius for generated softbodies.</td></tr>
+					<tr><td>`Subdivisions`</td><td>`number`</td><td>`2`</td><td>Mesh detail. Higher values cost much more.</td></tr>
+					<tr><td>`Damping`</td><td>`number`</td><td>`0.98`</td><td>Velocity damping for Verlet integration.</td></tr>
+					<tr><td>`Gravity`</td><td>`Vector3`</td><td>`Vector3.new(0, -140, 0)`</td><td>Gravity applied each physics step.</td></tr>
+					<tr><td>`ShapeStiffness`</td><td>`number`</td><td>`0.1`</td><td>How strongly the body returns to its original shape.</td></tr>
+					<tr><td>`BendStiffness`</td><td>`number`</td><td>`0.1`</td><td>Strength of bend constraints.</td></tr>
+					<tr><td>`CornerSoftness`</td><td>`number`</td><td>`0.6`</td><td>Softens stretched bend constraints.</td></tr>
+					<tr><td>`Friction`</td><td>`number`</td><td>`1`</td><td>Collision friction.</td></tr>
+					<tr><td>`Bounce`</td><td>`number`</td><td>`2`</td><td>Collision bounce response.</td></tr>
+					<tr><td>`FloorY`</td><td>`number`</td><td>`0`</td><td>Fallback floor height.</td></tr>
+					<tr><td>`FixedDt`</td><td>`number`</td><td>`1 / 60`</td><td>Fixed physics timestep.</td></tr>
+					<tr><td>`MaxStepsPerFrame`</td><td>`number`</td><td>`2`</td><td>Max physics catch-up steps per frame.</td></tr>
+					<tr><td>`RandomAngularVelocity`</td><td>`number`</td><td>`0`</td><td>Adds random starting tumble.</td></tr>
+					<tr><td>`AngularVelocity`</td><td>`Vector3`</td><td>`Vector3.zero`</td><td>Initial spin direction and speed.</td></tr>
+					<tr><td>`Mesh`</td><td>`table`</td><td>`nil`</td><td>Custom mesh data from `utility.from_mesh_part`.</td></tr>
+					<tr><td>`ExtraIgnore`</td><td>`table`</td><td>`nil`</td><td>Parts ignored by softbody collision.</td></tr>
+					<tr><td>`AlwaysRenderDistance`</td><td>`number`</td><td>`80`</td><td>Always render when camera is within this distance.</td></tr>
+					<tr><td>`MaxRenderDistance`</td><td>`number`</td><td>`250`</td><td>Hide/sleep beyond this distance.</td></tr>
+					<tr><td>`CullPadding`</td><td>`number`</td><td>`200`</td><td>Extra screen padding before culling.</td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section id="custom-mesh" class="section">
+			<h2>Custom Mesh Softbody</h2>
+			<p>
+				Use `Utility.from_mesh_part` to turn a low-poly `MeshPart` into softbody mesh data.
+				High-poly meshes can lag or hit Roblox EditableMesh memory limits.
+			</p>
+
+			<pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local softbody_handler = require(ReplicatedStorage.SoftbodyHandler)
+local utility = require(ReplicatedStorage.SoftbodyHandler.Utility)
+
+local cube = workspace:WaitForChild("Cube")
+local meshData = utility.from_mesh_part(cube)
+
+local body = softbody_handler.Create(Vector3.new(15, 20, 0), cube.Color, {
+	Mesh = meshData,
+	ShapeStiffness = 0.45,
+	BendStiffness = 0.04,
+	FloorY = 0,
+})
+
+cube.Transparency = 1
+cube.CanCollide = false</code></pre>
+		</section>
+
+		<section id="examples" class="section">
+			<h2>Examples</h2>
+
+			<div class="api-card">
+				<h3>Random Softbody Sphere</h3>
+				<pre><code>softbody_handler.Create(Vector3.new(0, 30, 0), Color3.fromRGB(120, 185, 255), {
+	Radius = 5,
+	Subdivisions = 2,
+	RandomAngularVelocity = 4,
+	FloorY = 0,
+})</code></pre>
+			</div>
+
+			<div class="api-card">
+				<h3>Multiple Softbodies</h3>
+				<pre><code>for i = 1, 8 do
+	local x = ((i - 1) % 4) * 14
+	local z = math.floor((i - 1) / 4) * 14
+
+	softbody_handler.Create(Vector3.new(x, 30, z), Color3.fromRGB(120, 185, 255), {
+		Radius = 4,
+		Subdivisions = 1,
+		FloorY = 0,
+	})
+
+	task.wait(0.1)
+end</code></pre>
+			</div>
+		</section>
+
+		<section id="performance" class="section">
+			<h2>Performance Notes</h2>
+			<p>
+				Softbodies are expensive because every vertex is simulated and updated. Keep meshes low-poly,
+				limit active softbodies, and avoid high subdivision counts.
+			</p>
+
+			<ul class="feature-list">
+				<li>Use `Subdivisions = 1` for many spheres.</li>
+				<li>Use `Subdivisions = 2` for better quality but fewer active objects.</li>
+				<li>Avoid high-poly imported meshes.</li>
+				<li>Use culling settings for large scenes.</li>
+				<li>Destroy unused softbodies with `softbody_handler.Destroy(body)`.</li>
+			</ul>
+
+			<div class="note">
+				Roblox EditableMesh has memory limits. If creation fails, reduce mesh complexity or the amount of active softbodies.
+			</div>
+		</section>
 	</main>
+
+	<footer>
+		<p>Softbody Physics for Roblox EditableMesh</p>
+	</footer>
+
+	<script src="script.js"></script>
 </body>
 </html>
